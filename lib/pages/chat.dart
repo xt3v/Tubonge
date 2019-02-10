@@ -148,8 +148,8 @@ class ChatPageState extends State<ChatPage>{
               margin: new EdgeInsets.symmetric(horizontal: 8.0),
               child: new IconButton(
                 icon: new Icon(Icons.send),
-                onPressed: onSendMessage(messageController.text,0),
                 color:Colors.greenAccent,
+                onPressed: () {onSendMessage(messageController.text, 0);messageController.text = "";},
               ),
             ),
             color: Colors.white,
