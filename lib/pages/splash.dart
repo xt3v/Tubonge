@@ -23,28 +23,6 @@ class SplashState extends State<SplashScreen>{
     //check if there are user details
     SharedPreferences.getInstance().then((pref){
         if(pref.getString("user") != null){
-           if(pref.getString("chats") == null){
-             List<Map<String,String>> chats = List();
-             var o = {
-               "name": "Tom",
-               "avatar" : "http://www.beautifulhameshablog.com/wp-content/uploads/2017/09/Beautiful-girls-in-India-Alia-Bhatt-beautiful-indian-girl-image-beautiful-girl-image-indian-girls-photos-indian-girls-images.jpg",
-               "id" : "12",
-               "last" : "The test"
-             };
-             chats.add(o);
-             var p = {
-               "name": "Jane",
-               "avatar" : "http://www.beautifulhameshablog.com/wp-content/uploads/2017/09/Beautiful-girls-in-India-Alia-Bhatt-beautiful-indian-girl-image-beautiful-girl-image-indian-girls-photos-indian-girls-images.jpg",
-               "id" : "11",
-               "last" : "The test two"
-             };
-             chats.add(p);
-
-             pref.setString("chats", json.encode(chats));
-           }
-
-
-           print("logged in nigg!!");
            var user = pref.getString("user");
            var pass = pref.getString("password");
             

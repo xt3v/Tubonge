@@ -19,7 +19,12 @@ class ChatState extends State<ChatScreen>{
 
     SharedPreferences.getInstance().then((pref){
        setState(() {
-         list = json.decode(pref.get("chats"));
+         if(pref.getString("chats") != null){
+           list = json.decode(pref.getString("chats"));
+         }else{
+           list = new List();
+         }
+
        });
     });
   }
@@ -44,7 +49,7 @@ class ChatState extends State<ChatScreen>{
       return  GestureDetector(
           onTap: (){
             Navigator.push(context,
-                MaterialPageRoute(builder:(context) => ChatPage(list[index]))
+                MaterialPageRoute(builder:(context) => ChatPage(list[index],false))
             );
           },
           child: Container(
@@ -80,15 +85,3 @@ class ChatState extends State<ChatScreen>{
       );
     }
   }
-
-
-
-
-class Chat{
-  String user;
-  int newtexts;
-  String image;
-
-  Chat(this.user,this.newtexts,this.image);
-}
-

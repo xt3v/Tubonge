@@ -7,7 +7,7 @@ import 'package:tubonge/pages/discover_screen.dart';
 import 'package:tubonge/pages/contact_screen.dart';
 
 class HomePage extends StatefulWidget{
-  HomePage({Key key,@required this.user}): super(key: key);
+  HomePage({Key key,this.user}): super(key: key);
 
   final User user;
 
@@ -48,6 +48,7 @@ class _HomeState extends State<HomePage> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
        appBar: AppBar(
 
           backgroundColor: Theme.of(context).primaryColor,
@@ -60,7 +61,6 @@ class _HomeState extends State<HomePage> with SingleTickerProviderStateMixin {
             ],
           ),
           actions: <Widget>[
-             Icon(Icons.search),
              PopupMenuButton(
                itemBuilder: (BuildContext con){
                  return choices.map(
@@ -83,16 +83,16 @@ class _HomeState extends State<HomePage> with SingleTickerProviderStateMixin {
           ],
 
        ),
-       body: Center(
-          child: TabBarView(
+       body: TabBarView(
              controller: _tabController,
              children: <Widget>[
                ChatScreen(),
                ContactScreen(),
                DiscoverScreen()
              ],
-       ),
-       ),
+        ),
+
+
       bottomNavigationBar: Container(
          color: Theme.of(context).primaryColor,
          child:  TabBar(
