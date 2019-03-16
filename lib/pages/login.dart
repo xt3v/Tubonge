@@ -14,8 +14,6 @@ class _LoginState extends State<LoginPage>{
    GlobalKey<FormState> _formKey = new GlobalKey();
    _LoginData _loginData = new _LoginData();
 
-   Auth _auth = new Auth();
-
    String _validateName(String value){
      if(value.trim().isEmpty){
        return "Username cannot be empty !";
@@ -35,7 +33,7 @@ class _LoginState extends State<LoginPage>{
           _formKey.currentState.save();
 
           //Login here
-          _auth.signIn(_loginData.username, _loginData.password).then((user){
+          Auth.signIn(_loginData.username, _loginData.password).then((user){
             print("user = $user");
              if(user != null){
                Fluttertoast.showToast(
@@ -50,7 +48,8 @@ class _LoginState extends State<LoginPage>{
                SharedPreferences.getInstance().then((pref){
                  pref.setString("user",user.username);
                  pref.setString("password",user.password);
-
+                 pref.setString("uuid", user.uuid);
+                 Auth.user = user;
                  Navigator.pushAndRemoveUntil(
                      context,
                      MaterialPageRoute(

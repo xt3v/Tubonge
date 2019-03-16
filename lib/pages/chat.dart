@@ -43,12 +43,13 @@ class ChatPageState extends State<ChatPage>{
   void initState() {
     // TODO: implement initState
     super.initState();
+    print("Chat "+peerData["chatId"]);
     isStickerShow = false;
     focusNode.addListener(onFocusChanged);
     isLoading = false;
-    Auth().getCurrentUser().then((user){
+    Auth.getCurrentUser().then((user){
        setState(() {
-          userId = user.uid;
+          userId = user.uuid;
        });
     });
   }
@@ -412,8 +413,11 @@ class ChatPageState extends State<ChatPage>{
              "id"  : peerData["id"],
             "last" :" "
          };
+          Firestore.instance.collection("chats").document(Auth.user.uuid).collection(Auth.user.uuid).add(chat);
 
-          chats.add(chat);
+       setState(() {
+         chats.add(chat);
+       });
           pref.setString("chats",json.encode( chats));
        });
     }

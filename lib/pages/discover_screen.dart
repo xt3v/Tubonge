@@ -13,7 +13,7 @@ class DiscoverState extends State<DiscoverScreen>{
   final ScrollController listScrollController = new ScrollController();
   TextEditingController searchController = new TextEditingController();
   var userId;
-  List listContacts;
+  List listContacts = new List();
 
   List<DocumentSnapshot> docs = new List();
   List<DocumentSnapshot> resultDocs = new List();
@@ -22,17 +22,33 @@ class DiscoverState extends State<DiscoverScreen>{
   void initState() {
     // TODO: implement initState
     super.initState();
-    Auth().getCurrentUser().then((user){
+    Auth.getCurrentUser().then((user){
       setState(() {
-        userId = user.uid;
+        userId = user.uuid;
       });
     });
 
     SharedPreferences.getInstance().then((pref){
       if(pref.getString("contacts") != null){
-        listContacts = json.decode(pref.getString("contacts"));
+          setState(() {
+            listContacts = json.decode(pref.getString("contacts"));
+          });
       }else{
-        listContacts = new List();
+        Firestore.instance.collection("contacts").document(userId).collection(userId).getDocuments().then((snapshot){
+           snapshot.documents.forEach((doc){
+             var entry = {
+               "name" : doc["name"],
+               "avatar" : doc["avatar"],
+               "id" : doc["id"],
+               "email" : doc["email"],
+               "chatId" : doc["chatId"]
+             };
+             setState(() {
+               listContacts.add(entry);
+             });
+           });
+
+        });
       }
     });
     getUsers();
@@ -126,18 +142,26 @@ class DiscoverState extends State<DiscoverScreen>{
     Firestore.instance.collection("users").getDocuments().then((snapshot) {
       List<DocumentSnapshot> toAdd = new List();
       snapshot.documents.forEach((doc){
-        var add = true;
-        for(var contact in listContacts){
-          if(contact["id"] == doc["id"]){
-            add = false;
-            break;
+        if(doc["id"] != userId){
+          var add = true;
+          for(var contact in listContacts){
+            if(contact["id"] == doc["id"]){
+              add = false;
+              break;
+            }
           }
+
+          if(add){
+            setState(() {
+              toAdd.add(doc);
+            });
+          }
+
         }
-
-        if(add)toAdd.add(doc);
-
       });
-      docs.addAll(toAdd);
+      setState(() {
+        docs.addAll(toAdd);
+      });
     }).catchError((onError){
       debugPrint(onError);
     });
@@ -229,10 +253,18 @@ class DiscoverState extends State<DiscoverScreen>{
          "email" : doc["email"],
          "chatId" : chatId
      };
-     list.add(entry);
+    setState(() {
+      list.add(entry);
+    });
      SharedPreferences.getInstance().then((pref){
         pref.setString("contacts", json.encode(list));
      });
+
+     setState(() {
+       listContacts.add(entry);
+       getUsers();
+     });
+     Firestore.instance.collection("contacts").document(userId).collection(userId).add(entry);
    }
 
 }

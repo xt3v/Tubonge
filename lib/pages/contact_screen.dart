@@ -1,29 +1,49 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tubonge/auth.dart';
 import 'dart:convert';
-
 import 'package:tubonge/pages/chat.dart';
+
 class ContactScreen extends StatefulWidget{
   ContactState createState() => ContactState();
 }
 
 class ContactState extends State<ContactScreen>{
 
- List contacts = new List();
+ List contacts;
 
  @override
   void initState() {
     // TODO: implement initState
     super.initState();
     SharedPreferences.getInstance().then((pref){
-      setState(() {
         if(pref.getString("contacts") != null){
-          contacts = json.decode(pref.getString("contacts"));
+         setState(() {
+           contacts = json.decode(pref.getString("contacts"));
+         });
         }else{
-          contacts = new List();
+          Firestore.instance.collection("contacts").document(Auth.user.uuid).collection(Auth.user.uuid).getDocuments().then((snapshot){
+            List tmpList = new List();
+            snapshot.documents.forEach((doc){
+              var entry = {
+                "name" : doc["name"],
+                "avatar" : doc["avatar"],
+                "id" : doc["id"],
+                "email" : doc["email"],
+                "chatId" : doc["chatId"]
+              };
+              tmpList.add(entry);
+            });
+            setState(() {
+              contacts = tmpList;
+            });
+            SharedPreferences.getInstance().then((pref){
+                pref.setString("contacts",json.encode(contacts));
+            });
+          });
         }
 
-      });
     });
   }
 
@@ -31,7 +51,7 @@ class ContactState extends State<ContactScreen>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:Container(
+      body: contacts == null ? Center(child: CircularProgressIndicator(),):Container(
         padding: EdgeInsets.only(top: 10),
         child: ListView.builder(
         itemBuilder: (BuildContext con,int index) => buildContact(context,index),

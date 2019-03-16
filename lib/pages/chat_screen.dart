@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tubonge/auth.dart';
 import 'package:tubonge/pages/chat.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,7 +12,7 @@ class ChatScreen extends StatefulWidget{
 class ChatState extends State<ChatScreen>{
 
   TextEditingController _searchController = new TextEditingController();
-  var list;
+  List list;
 
   @override
   void initState() {
@@ -18,14 +20,34 @@ class ChatState extends State<ChatScreen>{
     super.initState();
 
     SharedPreferences.getInstance().then((pref){
-       setState(() {
+
          if(pref.getString("chats") != null){
-           list = json.decode(pref.getString("chats"));
+           setState(() {
+             list = json.decode(pref.getString("chats"));
+           });
          }else{
-           list = new List();
+            Firestore.instance.collection("chats").document(Auth.user.uuid).collection(Auth.user.uuid).getDocuments().then((snapshot){
+              List tmpList = new List();
+              snapshot.documents.forEach((doc){
+                 var chat = {
+                   "chatId" : doc["chatId"],
+                   "name" : doc["name"],
+                   "avatar": doc["avatar"],
+                   "id"  : doc["id"],
+                   "last" : doc["last"]
+                 };
+                 tmpList.add(chat);
+               });
+              setState(() {
+                list = tmpList;
+              });
+              SharedPreferences.getInstance().then((pref){
+                    pref.setString("chats", json.encode(list));
+                });
+            });
          }
 
-       });
+
     });
   }
 

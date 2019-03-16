@@ -6,6 +6,8 @@ import 'package:tubonge/auth.dart';
 import 'package:tubonge/home_page.dart';
 import 'dart:convert';
 
+import 'package:tubonge/user.dart';
+
 class SplashScreen extends StatefulWidget{
 
   @override
@@ -23,31 +25,23 @@ class SplashState extends State<SplashScreen>{
     //check if there are user details
     SharedPreferences.getInstance().then((pref){
         if(pref.getString("user") != null){
-           var user = pref.getString("user");
+           var username = pref.getString("user");
            var pass = pref.getString("password");
-            
-           print("User name = $user .. password = $pass");
-           
-           Auth().signIn(user, pass).then( (user){
-               if(user != null){
-                 Timer(Duration(milliseconds: 200),()=> Navigator.pushAndRemoveUntil(
-                   context,
-                   MaterialPageRoute(
-                     builder: (context) => HomePage(user: user),
-                   ),
-                     (Route<dynamic> r) => false
-                 ));
-               }
-           }).catchError((error){
-             Fluttertoast.showToast(
-               msg: error.toString(),
-               toastLength: Toast.LENGTH_SHORT,
-               gravity: ToastGravity.BOTTOM,
-               timeInSecForIos: 1,
-               backgroundColor: Colors.white,
-               textColor: Colors.black,
-             );
-           });
+           var uuid = pref.getString("uuid");
+           print("User name = $username .. password = $pass");
+
+           User user = new User();
+           user.username = username;
+           user.password = pass;
+           user.uuid = uuid;
+           Auth.user = user;
+           Timer(Duration(milliseconds: 100),()=> Navigator.pushAndRemoveUntil(
+               context,
+               MaterialPageRoute(
+                 builder: (context) => HomePage(user: user),
+               ),
+                   (Route<dynamic> r) => false
+           ));
            
         }else{
            Timer(

@@ -33,7 +33,12 @@ class _HomeState extends State<HomePage> with SingleTickerProviderStateMixin {
     SharedPreferences.getInstance().then((pref){
       pref.remove("user");
       pref.remove("password");
-      Auth().signOut();
+      pref.remove("uuid");
+      pref.remove("chats");
+      pref.remove("contacts");
+      Auth.signOut().catchError((err){
+         print(err);
+      });
       Navigator.of(context).pushNamedAndRemoveUntil("/Login", (Route<dynamic> r)=> false);
     });
   }

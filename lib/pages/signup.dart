@@ -18,7 +18,6 @@ class _SignData{
 }
 
 class _SignState extends State<SignUpPage>{
-  Auth _auth = new Auth();
 
   GlobalKey<FormState> _formkey = new GlobalKey<FormState>();
   
@@ -63,7 +62,7 @@ class _SignState extends State<SignUpPage>{
     if (_formkey.currentState.validate()) {
       _formkey.currentState.save(); // Save our form now.
 
-     _auth.signUp(_signdata.email, _signdata.password).then((firebaseUser){
+     Auth.signUp(_signdata.email, _signdata.password).then((firebaseUser){
 
 
         Firestore.instance.collection('users').document(firebaseUser.uid).setData(
