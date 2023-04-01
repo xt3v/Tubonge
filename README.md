@@ -8,8 +8,6 @@ A whatsApp like chatapp made with flutter and firebase.
 Unlike whatsapp users create accounts and can search for other users if they know the username.
 It is still under development so some features are not yet fully implemented.
 
-I am noob in flutter sooo.....forgive my code
-
 
 ## Getting Started with
 
